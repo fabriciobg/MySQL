@@ -1,0 +1,189 @@
+//Criar tabela com propriedades para aceitar palavras com acentuação 
+create table if not exists pessoas(
+      id int not null auto_increment,
+      nome varchar(30) not null,
+      nascimento date,
+      sexo enum('M', 'F'),
+      peso decimal(5,2),
+      altura decimal (3,2),
+      nacionalidade varchar(20) default 'Brasil',
+      primary key(id)
+) default charset = utf8;
+
+//Adicionar uma nova coluna
+alter table nome_tabela 
+add column nome_coluna varchar(10);
+
+//Apagar uma coluna
+alter table nome_tabela 
+drop column nome_coluna;
+
+//Adicionar uma coluna ao lado de uma outra coluna já existente
+alter table nome_tabela 
+add column nome_coluna varchar(10) after nome_coluna_existente;
+
+//Adicionar uma coluna como primeira da tabela
+alter table nome_tabela 
+add column nome_coluna varchar(10) first;
+
+//Editar uma coluna, modificando a capacidade, por exemplo varchar(10) -> varchar(20)
+alter table nome_tabela 
+modify column nome_coluna varchar(20);
+
+//Outro tipo de edição que permite modificar o nome da coluna. Também é possível modificar o tipo do dado que a coluna armazena
+alter table nome_tabela 
+change column nome_atual_coluna novo_nome_coluna varchar(20);
+
+//Renomear uma tabela
+alter table nome_atual_tabela 
+rename to novo_nome_tabela;
+
+//Descrever uma tabela
+desc nome_tabela;
+
+//Mostrar o conteúdo de uma tabela
+select * from nome_tabela
+
+//Deletar tabela
+drop table if exists nome_tabela;
+
+//Povoar uma tabela
+/* Ordem das colunas da tabela: (id, nome, idade)*/
+/* Ao fornecer os dados na ordem que estão dispostos na tabela:*/
+
+insert into Tabela value
+('1','Pedro','22'),
+('2','Maria','12'),
+('3','Maricota','77');
+
+/*Caso necessite adicionar informacoes fora da ordem presente na tabela, utilizar:*/
+
+insert into Tabela (idade, id, nome) 
+value
+('22','1','Pedro'),
+('12','2','Maria'),
+('77','3','Maricota');
+
+//Manipulando registros/linhas/tuplas
+update cursos
+set nome = 'Java', carga = '40', ano = '2015'
+where idcurso = '5'
+limit 1; // Limitar o comando para 1 linha, segurança!
+
+//Deletar registro/linha/tupla
+delete from cursos
+where ano = '2018' // recomendável utilizar chave primária
+limit 2; // Limitador de número de linhas afetadas
+
+//Apagar todo o conteúdo da tabela, mantendo a tabela
+truncate cursos;
+
+//Select 
+
+/*Sintaxe*/
+select nomeColunaA, nomeColunaB from nomeTabela
+where nomeColuna *condição* *parâmetro* AND / OR *segunda condição*
+order by nomeColunaA, nomeColunaB; /* desc (descendente)*/ 
+
+/********************************************************/
+/*				Comandos do WHERE						*/
+/********************************************************/
+/*				=	>	<	>=	<=	<>	!=				*/
+/*				in ()		between x and y				*/
+/*	like 'P%'	% -> coringa	_ -> campo obrigatório	*/
+/*				distinct		like ''					*/
+/*			count()	max()	min()	sum()	avg()		*/
+/********************************************************/
+
+
+/*Exemplos*/
+
+select ano, nome, carga from cursos 
+order by ano, nome;
+
+select nome, descricao, ano from cursos 
+where ano <= '2015'
+order by ano, nome;
+
+select nome, ano from cursos
+where ano between 2014 and 2016
+order by ano desc, nome;
+
+select nome, descricao, ano from cursos
+where ano in (2014, 2016)
+order by ano;
+
+select nome, carga, totaulas from cursos
+where carga > 35 and totaulas < 30;
+
+select nome, carga, totaulas from cursos
+where carga > 35 or totaulas < 30;
+
+/* Comando de pesquisa por campo, comando LIKE */
+select * from cursos
+where nome not like '%A%';
+
+/* Não mostrar compo repetido, comando DISTINCT */
+select distinct carga from cursos  
+order by carga;
+
+/* Contar o número de registros, comando COUNT() */
+select count(*) from cursos
+where carga > 40;
+
+/* Maior valor em determinada coluna da tabela, comando MAX() */
+select max(carga) from cursos;
+select max(totaulas) from cursos where ano = '2016';
+
+/* Menor valor em determinada coluna da tabela, comando MIN() */
+select min(totaulas) from cursos where ano = '2016';
+
+/* Soma de todos os valores contidos na coluna, comando SUM() */
+select sum(totaulas) from cursos where ano = '2016';
+
+/* Média dos valores contidos em uma coluna, comando AVG() */
+select avg(totaulas) from cursos where ano = '2016';
+
+
+//EXERCÍCIOS
+#1 Uma lista com o nome de todas as mulheres contidas na tabela gafanhotos.
+						select nome from gafanhotos
+						where sexo = 'F'
+						order by nome;
+						
+#2 Uma lista com todos aqueles que nasceram entre 01/Jan/2000 e 31/Dez/2015. 
+						select * from gafanhotos
+						where nascimento between '2000-01-01' and '2015-12-31'
+						order by nascimento;
+						
+#3 Uma lista com o nome de todos os homens que trabalham como programador.
+						select nome from gafanhotos
+						where sexo = 'M' and profissao = 'Programador'
+						order by nome;
+						
+#4 Uma lista com todos os dados de todas as mulheres que nasceram no Brasil e que tem seu nome iniciado com a letra J.
+						select * from gafanhotos
+						where sexo = 'F' and nacionalidade = 'Brasil' and nome like 'J%'
+						order by nome;
+						
+#5 Uma lista com o nome e a nacionalidade de todos os homens que têm Silva no nome, não nasceram no Brasil e pesam menos de 100 kg.
+						select nome, nacionalidade from gafanhotos
+						where sexo = 'M' and nome like '%Silva%' and nacionalidade != 'Brasil' and peso < 100
+						order by nome;
+						
+#6 Qual é a maior altura entre gafanhotos homens que moram no Brasil?
+						select max(altura) from gafanhotos
+						where sexo = 'M' and nacionalidade = 'Brasil';
+						
+#7 Qual é a média de peso dos gafanhotos cadastrados?
+						select avg(peso) from gafanhotos;
+						
+#8 Qual o menor peso entre as gafanhotos mulheres que nasceram fora do Brasil e entre 01/Jan/1990 e 31/Dez/2000?
+						select min(peso) from gafanhotos
+						where sexo = 'F' and nacionalidade != Brasil and nascimento between '1990-01-01' and '2000-12-31';
+
+#9 Quantas gafanhotos mulheres tem mais de 1.90m de altura?
+						select count(altura) from gafanhotos
+						where sexo = 'F' and altura > '1.90'; 
+						
+
